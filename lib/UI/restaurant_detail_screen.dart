@@ -1,10 +1,10 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:restaurant_finder/BLoC/bloc_provider.dart';
-import 'package:restaurant_finder/BLoC/favorite_bloc.dart';
 import 'package:restaurant_finder/DataLayer/restaurant.dart';
-import 'package:restaurant_finder/UI/image_container.dart';
+import 'package:restaurant_finder/UI/detail_container.dart';
+import 'package:restaurant_finder/UI/map_container.dart';
+import 'package:restaurant_finder/UI/review_container.dart';
 
 class RestaurantDetailsScreen extends StatelessWidget {
   final Restaurant restaurant;
@@ -13,86 +13,44 @@ class RestaurantDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Scaffold(
-      appBar: AppBar(title: Text(restaurant.name)),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          _buildBanner(),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  restaurant.cuisines,
-                  style: textTheme.subtitle.copyWith(fontSize: 18),
-                ),
-                Text(
-                  restaurant.address,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w100),
-                ),
-              ],
-            ),
+    return DefaultTabController(
+      length: choices.length,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(restaurant.name),
+          bottom: TabBar(
+            tabs: choices.map((Choice choice) {
+              return Tab(
+                text: choice.title,
+                icon: Icon(choice.icon),
+              );
+            }).toList(),
           ),
-          _buildDetails(context),
-          _buildFavoriteButton(context)
-        ],
+        ),
+        body: TabBarView(
+          children: choices.map((Choice choice) {
+            switch(choice.title) {
+              case 'DETAIL': return DetailContainer(restaurant: restaurant);
+              case 'MAP': return MapContainer(restaurant: restaurant);
+              case 'REVIEWS': return ReviewContainer(restaurant: restaurant);
+              default: return null;
+            }
+          }).toList(),
+        ),
       ),
-    );
-  }
-
-  Widget _buildBanner() {
-    return ImageContainer(
-      height: 200,
-      url: restaurant.imageUrl,
-    );
-  }
-
-  Widget _buildDetails(BuildContext context) {
-    final style = TextStyle(fontSize: 16);
-
-    return Padding(
-      padding: EdgeInsets.only(left: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            'Price: ${restaurant.priceDisplay}',
-            style: style,
-          ),
-          SizedBox(width: 40),
-          Text(
-            'Rating: ${restaurant.rating.average}',
-            style: style,
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 1
-  Widget _buildFavoriteButton(BuildContext context) {
-    final bloc = BlocProvider.of<FavoriteBloc>(context);
-    return StreamBuilder<List<Restaurant>>(
-      stream: bloc.favoritesStream,
-      initialData: bloc.favorites,
-      builder: (context, snapshot) {
-        List<Restaurant> favorites =
-        (snapshot.connectionState == ConnectionState.waiting)
-            ? bloc.favorites
-            : snapshot.data;
-        bool isFavorite = favorites.contains(restaurant);
-
-        return FlatButton.icon(
-          onPressed: () => bloc.toggleRestaurant(restaurant),
-          textColor: isFavorite ? Theme.of(context).accentColor : null,
-          icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
-          label: Text('Favorite'),
-        );
-      },
     );
   }
 }
+
+class Choice {
+  final String title;
+  final IconData icon;
+
+  const Choice ({this.title, this.icon});
+}
+
+const List<Choice> choices = const <Choice> [
+  const Choice(title: 'DETAIL', icon: Icons.details),
+  const Choice(title: 'MAP', icon: Icons.map),
+  const Choice(title: 'REVIEWS', icon: Icons.rate_review),
+];

@@ -1,3 +1,6 @@
+import 'package:restaurant_finder/DataLayer/review.dart';
+import 'package:restaurant_finder/DataLayer/user.dart';
+
 class Restaurant {
   final String id;
   final String name;
@@ -7,6 +10,8 @@ class Restaurant {
   final String imageUrl;
   final String cuisines;
   final String address;
+  final String lat;
+  final String long;
   final Rating rating;
 
   final int priceRange;
@@ -29,12 +34,14 @@ class Restaurant {
         currency = json['currency'],
         cuisines = json['cuisines'],
         address = json['location']['address'],
+        lat = json['location']['latitude'],
+        long = json['location']['longitude'],
         rating = Rating.fromJson(json['user_rating']);
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is Restaurant && runtimeType == other.runtimeType && id == other.id;
+      other is Restaurant && runtimeType == other.runtimeType && id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -48,3 +55,4 @@ class Rating {
       : text = json['rating_text'].toString(),
         average = json['aggregate_rating'].toString();
 }
+

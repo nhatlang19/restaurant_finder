@@ -7,6 +7,7 @@ import 'package:meta/meta.dart';
 
 import 'location.dart';
 import 'restaurant.dart';
+import 'review.dart';
 
 class ZomatoClient {
   final _apiKey = DotEnv().env['ZAMATO_CLIENT_KEY'];
@@ -38,6 +39,20 @@ class ZomatoClient {
         .toList(growable: false);
 
     return restaurants;
+  }
+
+  Future<List<Review>> fetchReviews(Restaurant restaurant, int start) async {
+    final results = await request(path: 'reviews', parameters: {
+      'res_id': restaurant.id,
+      'start': start.toString(),
+      'count': '10'
+    });
+
+    final reviews = results['user_reviews']
+        .map<Review>((json) => Review.fromJson(json['review']))
+        .toList(growable: false);
+
+    return reviews;
   }
 
   Future<Map> request(
