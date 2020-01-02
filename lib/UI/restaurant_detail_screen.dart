@@ -1,6 +1,9 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:restaurant_finder/BLoC/review/review_bloc.dart';
+import 'package:restaurant_finder/BLoC/review/review_event.dart';
 import 'package:restaurant_finder/DataLayer/restaurant.dart';
 import 'package:restaurant_finder/UI/detail_container.dart';
 import 'package:restaurant_finder/UI/map_container.dart';
@@ -32,7 +35,10 @@ class RestaurantDetailsScreen extends StatelessWidget {
             switch(choice.title) {
               case 'DETAIL': return DetailContainer(restaurant: restaurant);
               case 'MAP': return MapContainer(restaurant: restaurant);
-              case 'REVIEWS': return ReviewContainer(restaurant: restaurant);
+              case 'REVIEWS': return BlocProvider(
+                create: (context) => ReviewBloc(restaurant)..add(Fetch()),
+                child: ReviewContainer()
+              );
               default: return null;
             }
           }).toList(),

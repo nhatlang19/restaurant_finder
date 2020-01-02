@@ -41,11 +41,11 @@ class ZomatoClient {
     return restaurants;
   }
 
-  Future<List<Review>> fetchReviews(Restaurant restaurant, int start) async {
+  Future<List<Review>> fetchReviews(Restaurant restaurant, int start, int count) async {
     final results = await request(path: 'reviews', parameters: {
       'res_id': restaurant.id,
       'start': start.toString(),
-      'count': '10'
+      'count': count.toString(),
     });
 
     final reviews = results['user_reviews']
