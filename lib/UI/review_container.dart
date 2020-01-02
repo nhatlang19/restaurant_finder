@@ -4,6 +4,7 @@ import 'package:restaurant_finder/BLoC/review_bloc.dart';
 import 'package:restaurant_finder/DataLayer/restaurant.dart';
 import 'package:restaurant_finder/DataLayer/review.dart';
 import 'package:restaurant_finder/UI/image_container.dart';
+import 'package:restaurant_finder/UI/review_item.dart';
 
 class ReviewContainer extends StatelessWidget {
   final Restaurant restaurant;
@@ -26,15 +27,23 @@ class ReviewContainer extends StatelessWidget {
           }
 
           return ListView.separated(
+            padding: const EdgeInsets.all(10.0),
             itemCount: results.length,
             separatorBuilder: (context, index) => Divider(),
             itemBuilder: (context, index) {
               final review = results[index];
-              return ListTile(
-                leading: ImageContainer(
-                    width: 50, height: 50, url: review.user.profileImage),
-                title: Text(review.user.name),
-                subtitle: Text(review.reviewText),
+              return ReviewItem(
+                thumbnail: ImageContainer(
+                    width: 50,
+                    height: 50,
+                    shape: BoxShape.circle,
+                    url: review.user.profileImage),
+                author: review.user.name,
+                reviewTimeFriendly: review.reviewTimeFriendly,
+                subtitle: review.reviewText,
+                stars: review.stars,
+                likes: review.likes,
+                comments: review.comments,
               );
             },
           );

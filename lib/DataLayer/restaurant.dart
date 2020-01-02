@@ -1,6 +1,3 @@
-import 'package:restaurant_finder/DataLayer/review.dart';
-import 'package:restaurant_finder/DataLayer/user.dart';
-
 class Restaurant {
   final String id;
   final String name;

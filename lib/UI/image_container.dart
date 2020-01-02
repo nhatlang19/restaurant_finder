@@ -5,12 +5,14 @@ class ImageContainer extends StatelessWidget {
   final double height;
   final Color placeholder;
   final String url;
+  final BoxShape shape;
 
   const ImageContainer(
       {Key key,
         this.width,
         this.height,
         this.placeholder = const Color(0xFFEEEEEE),
+        this.shape = BoxShape.rectangle,
         @required this.url})
       : super(key: key);
 
@@ -20,6 +22,7 @@ class ImageContainer extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
+          shape: shape,
           color: placeholder,
           image: url.contains("http")
               ? DecorationImage(image: NetworkImage(url))
