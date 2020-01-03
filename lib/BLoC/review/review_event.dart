@@ -7,3 +7,4 @@ abstract class ReviewEvent extends Equatable {
 }
 
 class Fetch extends ReviewEvent {}
+class Refresh extends ReviewEvent {}

@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:restaurant_finder/BLoC/review/review_event.dart';
-import 'package:restaurant_finder/BLoC/review/review_state.dart';
+import 'package:restaurant_finder/BLoC/review/review.dart';
 import 'package:restaurant_finder/DataLayer/restaurant.dart';
 import 'package:restaurant_finder/DataLayer/zomato_client.dart';
 
@@ -18,6 +17,10 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
   @override
   Stream<ReviewState> mapEventToState(ReviewEvent event) async* {
     final currentState = state;
+    if (event is Refresh) {
+      print(1111);
+    }
+
     if (event is Fetch && !_hasReachedMax(currentState)) {
       try {
         if (currentState is ReviewUninitialized) {
@@ -38,11 +41,12 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
         yield ReviewError();
       }
     }
-    yield null;
   }
 
   Future<void> refresh() async {
     print('Refresh');
+    this..add(Refresh());
+    print('Refresh END');
   }
 
   bool _hasReachedMax(ReviewState state) =>

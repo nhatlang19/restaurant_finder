@@ -1,9 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:restaurant_finder/BLoC/review/review_bloc.dart';
-import 'package:restaurant_finder/BLoC/review/review_event.dart';
-import 'package:restaurant_finder/BLoC/review/review_state.dart';
+import 'package:restaurant_finder/BLoC/review/review.dart';
 import 'package:restaurant_finder/UI/image_container.dart';
 import 'package:restaurant_finder/UI/review_item.dart';
 

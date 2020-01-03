@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:restaurant_finder/BLoC/favorite_bloc.dart';
-import 'package:restaurant_finder/BLoC/bloc_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_finder/DataLayer/restaurant.dart';
+import 'package:restaurant_finder/BLoC/favorite/favorite.dart';
 import 'package:restaurant_finder/UI/image_container.dart';
 
 class DetailContainer extends StatelessWidget {
@@ -73,23 +73,15 @@ class DetailContainer extends StatelessWidget {
   // 1
   Widget _buildFavoriteButton(BuildContext context) {
     final bloc = BlocProvider.of<FavoriteBloc>(context);
-    return StreamBuilder<List<Restaurant>>(
-      stream: bloc.favoritesStream,
-      initialData: bloc.favorites,
-      builder: (context, snapshot) {
-        List<Restaurant> favorites =
-            (snapshot.connectionState == ConnectionState.waiting)
-                ? bloc.favorites
-                : snapshot.data;
-        bool isFavorite = favorites.contains(restaurant);
-
-        return FlatButton.icon(
-          onPressed: () => bloc.toggleRestaurant(restaurant),
-          textColor: isFavorite ? Theme.of(context).accentColor : null,
-          icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
-          label: Text('Favorite'),
-        );
-      },
-    );
+    return BlocBuilder<FavoriteBloc, FavoriteState> (
+    builder: (BuildContext context, FavoriteState state) {
+      bool isFavorite = state is FavoriteLoaded && state.restaurants.contains(restaurant);
+      return FlatButton.icon(
+        onPressed: () => bloc.add(ToggleRestaurant(restaurant)),
+        textColor: isFavorite ? Theme.of(context).accentColor : null,
+        icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+        label: Text('Favorite'),
+      );
+    });
   }
 }

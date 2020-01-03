@@ -6,4 +6,11 @@ class RestaurantFinderDelegate extends BlocDelegate {
     super.onTransition(bloc, transition);
     print(transition);
   }
+
+  @override
+  void onError(Bloc bloc, Object error, StackTrace stacktrace) {
+    print(error);
+    super.onError(bloc, error, stacktrace);
+  }
+
 }

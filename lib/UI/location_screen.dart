@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:restaurant_finder/BLoC/bloc_provider.dart';
-import 'package:restaurant_finder/BLoC/location_bloc.dart';
-import 'package:restaurant_finder/BLoC/location_query_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:restaurant_finder/BLoC/location/location.dart';
 import 'package:restaurant_finder/DataLayer/location.dart';
 
 class LocationScreen extends StatelessWidget {
@@ -12,47 +11,70 @@ class LocationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = LocationQueryBloc();
 
-    return BlocProvider<LocationQueryBloc>(
-        bloc: bloc,
-        child: Scaffold(
-            appBar: AppBar(title: Text('Where do you want to eat?')),
-            body: Column(
-              children: <Widget>[
-                Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: 'Enter a location'),
-                      onChanged: (query) {
-                        bloc.submitQuery(query);
-                      },
-                    )),
-                Expanded(
-                  child: buildResults(bloc),
-                )
-              ],
-            )));
+    return BlocProvider(
+        create: (context) => LocationQueryBloc(),
+        child: LocationWidget(isFullScreenDialog: isFullScreenDialog)
+    );
+  }
+}
+
+class LocationWidget extends StatefulWidget {
+  final bool isFullScreenDialog;
+
+  const LocationWidget({Key key, this.isFullScreenDialog = false})
+      : super(key: key);
+
+  @override
+  LocationWidgetState createState() => LocationWidgetState();
+}
+
+class LocationWidgetState extends State<LocationWidget> {
+  LocationQueryBloc _bloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _bloc = BlocProvider.of<LocationQueryBloc>(context);
   }
 
-  Widget buildResults(LocationQueryBloc bloc) {
-    return StreamBuilder<List<Location>>(
-      stream: bloc.locationStream,
-      builder: (context, snapshot) {
-        // 1
-        final results = snapshot.data;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(title: Text('Where do you want to eat?')),
+        body: Column(
+          children: <Widget>[
+            Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: TextField(
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: 'Enter a location'),
+                  onChanged: (query) {
+                    _bloc.add(Query(query));
+                  },
+                )),
+            Expanded(
+              child: buildResults(),
+            )
+          ],
+        ));
+  }
 
-        if (results == null) {
+  Widget buildResults() {
+    return BlocBuilder<LocationQueryBloc, LocationQueryState>(
+      builder: (BuildContext context, LocationQueryState state) {
+        if (state is LocationQueryUninitialized) {
           return Center(child: Text('Enter a location'));
         }
 
-        if (results.isEmpty) {
-          return Center(child: Text('No Results'));
+        if (state is LocationQueryError) {
+          return Center(
+            child: Text('failed to fetch locations'),
+          );
         }
 
-        return _buildSearchResults(results);
+        return _buildSearchResults((state as LocationQueryLoaded).locations);
       },
     );
   }
@@ -68,14 +90,22 @@ class LocationScreen extends StatelessWidget {
           title: Text(location.title),
           onTap: () {
             final locationBloc = BlocProvider.of<LocationBloc>(context);
-            locationBloc.selectLocation(location);
+            locationBloc.add(SelectLocation(location));
 
-            if (isFullScreenDialog) {
+            if (widget.isFullScreenDialog) {
               Navigator.of(context).pop();
             }
+
+            locationBloc.close();
           },
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _bloc.close();
+    super.dispose();
   }
 }
