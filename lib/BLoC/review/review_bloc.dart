@@ -18,7 +18,8 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
   Stream<ReviewState> mapEventToState(ReviewEvent event) async* {
     final currentState = state;
     if (event is Refresh) {
-      print(1111);
+      final reviews = await _client.fetchReviews(restaurant, offset, limit);
+      yield ReviewLoaded(reviews: reviews, hasReachedMax: false);
     }
 
     if (event is Fetch && !_hasReachedMax(currentState)) {
@@ -41,12 +42,6 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
         yield ReviewError();
       }
     }
-  }
-
-  Future<void> refresh() async {
-    print('Refresh');
-    this..add(Refresh());
-    print('Refresh END');
   }
 
   bool _hasReachedMax(ReviewState state) =>

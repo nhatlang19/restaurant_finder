@@ -49,7 +49,7 @@ class ReviewContainerState extends State<ReviewContainer> {
             );
           }
           return RefreshIndicator(
-              onRefresh: _bloc.refresh,
+              onRefresh: _onRefresh,
               child: ListView.separated(
                 physics: AlwaysScrollableScrollPhysics(),
                 controller: _scrollController,
@@ -90,6 +90,10 @@ class ReviewContainerState extends State<ReviewContainer> {
     if (maxScroll - currentScroll <= _scrollThreshold) {
       _bloc.add(Fetch());
     }
+  }
+
+  Future<void> _onRefresh() async {
+    _bloc.add(Refresh());
   }
 
   @override
