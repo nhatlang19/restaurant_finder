@@ -3,6 +3,8 @@ import 'package:restaurant_finder/BLoC/restaurant/restaurant.dart';
 import 'package:restaurant_finder/DataLayer/location.dart';
 import 'package:restaurant_finder/DataLayer/zomato_client.dart';
 
+import 'package:rxdart/rxdart.dart';
+
 class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
   final Location location;
   final _client = ZomatoClient();
@@ -12,6 +14,13 @@ class RestaurantBloc extends Bloc<RestaurantEvent, RestaurantState> {
   @override
   // TODO: implement initialState
   RestaurantState get initialState => RestaurantUninitialized();
+
+  @override
+  Stream<RestaurantState> transformEvents(Stream<RestaurantEvent> events, Stream<RestaurantState> Function(RestaurantEvent) next) {
+    return super.transformEvents(events.debounceTime(
+      Duration(milliseconds: 500),
+    ), next);
+  }
 
   @override
   Stream<RestaurantState> mapEventToState(RestaurantEvent event) async* {

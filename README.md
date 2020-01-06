@@ -12,3 +12,4 @@
 
 - https://www.raywenderlich.com/4074597-getting-started-with-the-bloc-pattern
 - https://bloclibrary.dev
+- https://github.com/luggit/react-native-config/issues/21

@@ -29,3 +29,5 @@ subprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+defaultConfig { manifestPlaceholders = [ GOOGLE_MAP_KEY:project.env.get("GOOGLE_MAP_KEY") ] }
